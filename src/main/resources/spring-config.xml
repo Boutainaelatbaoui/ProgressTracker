@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="team" class="domain.entity.Team" scope="singleton">
+        <property name="team_id" value="1" />
+        <property name="name" value="NomDeLÉquipe" />
+    </bean>
+
+    <bean id="user" class="domain.entity.User" scope="singleton">
+        <property name="user_id" value="1" />
+        <property name="user_name" value="NomDeLUtilisateur" />
+        <property name="email" value="user@example.com" />
+        <property name="password" value="motDePasse" />
+        <property name="telephone" value="123456789" />
+        <property name="team" ref="team" />
+    </bean>
+
+    <bean id="objective" class="domain.entity.Objective" scope="prototype">
+        <property name="objective_id" value="1" />
+        <property name="title" value="TitreDeLObjectif" />
+        <property name="description" value="Description de l'objectif" />
+        <property name="start_date" value="2023-11-01" />
+        <property name="end_date" value="2023-12-01" />
+        <property name="completion_status" ref="completionStatus" />
+        <property name="user" ref="user" />
+    </bean>
+
+    <bean id="progressRecord" class="domain.entity.ProgressRecord" scope="singleton">
+        <property name="record_id" value="1" />
+        <property name="date" value="2023-11-15" />
+        <property name="value" value="50" />
+        <property name="objective" ref="objective" />
+    </bean>
+
+    <bean id="completionStatus" class="domain.enums.CompletionStatus" factory-method="valueOf">
+        <constructor-arg value="NOT_STARTED" />
+    </bean>
+    <bean id="inProgressStatus" class="domain.enums.CompletionStatus" factory-method="valueOf">
+        <constructor-arg value="IN_PROGRESS" />
+    </bean>
+
+    <bean id="completedStatus" class="domain.enums.CompletionStatus" factory-method="valueOf">
+        <constructor-arg value="COMPLETED" />
+    </bean>
+
+    <bean id="delayedStatus" class="domain.enums.CompletionStatus" factory-method="valueOf">
+        <constructor-arg value="DELAYED" />
+    </bean>
+
+</beans>
