@@ -9,7 +9,6 @@ public class ProgressRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int record_id;
-
     private Date date;
     private int value;
 

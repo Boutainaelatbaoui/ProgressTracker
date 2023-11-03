@@ -1,8 +1,64 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+           https://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/data/jpa https://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/processTracker?createDatabaseIfNotExist=true" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
+
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan" value="domain.entity" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="database" value="MYSQL" />
+                <property name="showSql" value="true" />
+            </bean>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+
+    <tx:annotation-driven />
+
+
+    <bean id="persistenceExceptionTranslationPostProcessor" class=
+            "org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+    <jpa:repositories base-package="repository"/>
+
+
+    <context:component-scan base-package="repository">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+    </context:component-scan>
+
+    <bean id="userService" class="service.UserService">
+        <constructor-arg ref="userRepository" />
+        <constructor-arg ref="objectiveRepository" />
+        <constructor-arg ref="progressRepository" />
+    </bean>
+
+    <bean id="serviceProgressTracker" class="service.ServiceProgressTracker">
+        <constructor-arg ref="userService"/>
+    </bean>
 
     <bean id="team" class="domain.entity.Team" scope="singleton">
         <property name="team_id" value="1" />
@@ -22,22 +78,30 @@
         <property name="objective_id" value="1" />
         <property name="title" value="TitreDeLObjectif" />
         <property name="description" value="Description de l'objectif" />
-        <property name="start_date" value="2023-11-01" />
-        <property name="end_date" value="2023-12-01" />
+        <property name="start_date">
+            <null />
+        </property>
+        <property name="end_date">
+            <null />
+        </property>
         <property name="completion_status" ref="completionStatus" />
         <property name="user" ref="user" />
     </bean>
 
     <bean id="progressRecord" class="domain.entity.ProgressRecord" scope="singleton">
         <property name="record_id" value="1" />
-        <property name="date" value="2023-11-15" />
+        <property name="date">
+            <null />
+        </property>
         <property name="value" value="50" />
         <property name="objective" ref="objective" />
     </bean>
 
+
     <bean id="completionStatus" class="domain.enums.CompletionStatus" factory-method="valueOf">
         <constructor-arg value="NOT_STARTED" />
     </bean>
+    
     <bean id="inProgressStatus" class="domain.enums.CompletionStatus" factory-method="valueOf">
         <constructor-arg value="IN_PROGRESS" />
     </bean>

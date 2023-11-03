@@ -14,7 +14,9 @@ public class Objective {
 
     private String title;
     private String description;
+    @Temporal(TemporalType.DATE)
     private Date start_date;
+    @Temporal(TemporalType.DATE)
     private Date end_date;
 
     @Enumerated(EnumType.STRING)
